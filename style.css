@@ -1,0 +1,54 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  background-color: transparent;
+  color: #3c4a5b;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent !important;
+}
+
+body {
+  background-color: #f0f3f8;
+}
+
+.heading {
+  font-weight: bold;
+}
+
+.currencies-card img {
+  max-height: 40px;
+}
+
+.currencies-list {
+  max-height: 60vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.green {
+  /* color: rgb(73, 204, 104); */
+  color: #49cc68;
+}
+
+.red {
+  /* color: rgb(255, 103, 61); */
+  color: #ff673d;
+}
+
+.small {
+  font-size: 0.875rem;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.chart {
+  user-select: none;
+}
