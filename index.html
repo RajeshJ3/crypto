@@ -64,10 +64,9 @@
               </div>
             </div>
           </div>
-          <div class="col-sm-12 col-lg-8 p-4">
+          <div class="col-sm-12 col-lg-8 p-4" id="c">
             <div class="row">
               <div class="custom-card chart-card" id="chart-card">
-                <h4 class="text-center heading mb-3">EOS Market</h4>
                 <div class="row mt-5 mb-5 pt-5 pb-5" id="chart-loader">
                   <div class="d-flex justify-content-center">
                     <div class="spinner-border text-primary" role="status">
@@ -92,16 +91,25 @@
                       justify-content: space-between;
                     "
                   >
-                    <div class="col-3 d-flex justify-content-center">
+                    <div class="col d-flex justify-content-center">
                       <button
                         class="btn btn-sm btn-primary prinary-btn-active"
+                        id="1h"
+                        onclick="drawChartAgain('1h')"
+                      >
+                        🔴&nbsp;Live
+                      </button>
+                    </div>
+                    <div class="col d-flex justify-content-center">
+                      <button
+                        class="btn btn-sm btn-primary"
                         id="1d"
                         onclick="drawChartAgain('1d')"
                       >
-                        1H
+                        1D
                       </button>
                     </div>
-                    <div class="col-3 d-flex justify-content-center">
+                    <div class="col d-flex justify-content-center">
                       <button
                         class="btn btn-sm btn-primary"
                         id="1w"
@@ -110,7 +118,7 @@
                         1W
                       </button>
                     </div>
-                    <div class="col-3 d-flex justify-content-center">
+                    <div class="col d-flex justify-content-center">
                       <button
                         class="btn btn-sm btn-primary"
                         id="1m"
@@ -119,7 +127,7 @@
                         1M
                       </button>
                     </div>
-                    <div class="col-3 d-flex justify-content-center">
+                    <div class="col d-flex justify-content-center">
                       <button
                         class="btn btn-sm btn-primary"
                         id="1y"
@@ -151,7 +159,7 @@
     <script src="./script.js"></script>
     <script>
       Market24hrs();
-      drawChart("1d");
+      drawChart("1h");
     </script>
   </body>
 </html>
