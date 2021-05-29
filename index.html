@@ -23,15 +23,19 @@
           <div class="col-sm-12 col-lg-4 p-4">
             <div class="row mb-1">
               <div class="custom-card currencies-card">
-                <h4 class="text-center heading mb-3">Currencies</h4>
+                <h4 class="text-center heading mb-3" id="currencies-heading">
+                  Currencies
+                </h4>
 
                 <div class="input-group mb-3">
                   <input
                     type="text"
+                    id="search-input"
                     class="form-control"
                     placeholder="Search Currency"
                     aria-label="Search Currency"
                     aria-describedby="basic-addon1"
+                    onkeydown="searchCurrency();"
                   />
                 </div>
 

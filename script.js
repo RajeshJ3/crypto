@@ -13,6 +13,7 @@ function getDateTime(timestamp, chartType) {
 }
 
 let CURRENCY = "btc";
+let Currencies24Hrs = [];
 
 async function drawChartAgain(chartType, currency = CURRENCY) {
   let btn1h = document.getElementById("1h");
@@ -153,7 +154,7 @@ async function drawChart(chartType, currency = CURRENCY) {
   chartCard.appendChild = ctx;
 }
 
-async function Market24hrs() {
+async function fetch24hrMarket() {
   let url = new URL(`${DOMAIN}/apicalls/`);
 
   url.search = new URLSearchParams({
@@ -165,7 +166,14 @@ async function Market24hrs() {
     method: "GET",
   });
 
-  let data = await response.json();
+  Currencies24Hrs = await response.json();
+  return Currencies24Hrs;
+}
+
+async function Market24hrs(data = Currencies24Hrs, search = false) {
+  if (!search) {
+    data = await fetch24hrMarket();
+  }
 
   let html = "";
 
@@ -215,4 +223,14 @@ async function Market24hrs() {
 
   const market24hrs = document.getElementById("market24hrs");
   market24hrs.innerHTML = html;
+
+  const currenciesHeading = document.getElementById("currencies-heading");
+  currenciesHeading.innerHTML = `Currencies (${data.length})`;
+}
+
+function searchCurrency() {
+  var searchInput = document.getElementById("search-input");
+  data = Currencies24Hrs.filter((i) => i.baseAsset.match(searchInput.value));
+
+  Market24hrs(data, true);
 }
