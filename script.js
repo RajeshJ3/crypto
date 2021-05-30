@@ -342,19 +342,20 @@ function getChartStats(data) {
   var current = data[data.length - 1][1];
 
   data.forEach((i) => {
-    if (i[1] > highest) {
-      highest = i[1];
+    let x = parseFloat(i[1]);
+    if (x > highest) {
+      highest = x;
     }
-    if (i[1] < lowest) {
-      lowest = i[1];
+    if (x < lowest) {
+      lowest = x;
     }
   });
 
   var open = data[0][1];
   var close = data[data.length - 1][1];
 
-  let percent = (((close - open) / open) * 100).toFixed(2);
-  let up = open < close;
+  let percent = parseFloat((((close - open) / open) * 100).toFixed(2));
+  let up = percent >= 0;
 
   let chartStats = document.getElementById("chart-stats");
   chartStats.innerHTML = `
