@@ -78,6 +78,7 @@
                     </div>
                   </div>
                 </div>
+                <div id="chart-stats"></div>
                 <div id="canvas">
                   <canvas
                     id="chart"
@@ -86,27 +87,42 @@
                     style="display: none"
                   ></canvas>
                 </div>
-                <div class="container">
+                <div class="container-flex">
                   <div
                     class="row mt-4"
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
+                      padding-left: 10px;
+                      padding-right: 10px;
                     "
                   >
                     <div class="col d-flex justify-content-center">
                       <button
-                        class="btn btn-sm btn-primary prinary-btn-active"
-                        id="1h"
-                        onclick="drawChartAgain('1h')"
+                        class="
+                          btn btn-sm btn-primary
+                          chart-btn
+                          prinary-btn-active
+                        "
+                        id="live"
+                        onclick="drawChartAgain('live')"
                       >
                         🔴&nbsp;Live
                       </button>
                     </div>
                     <div class="col d-flex justify-content-center">
                       <button
-                        class="btn btn-sm btn-primary"
+                        class="btn btn-sm btn-primary chart-btn"
+                        id="1h"
+                        onclick="drawChartAgain('1h')"
+                      >
+                        1H
+                      </button>
+                    </div>
+                    <div class="col d-flex justify-content-center">
+                      <button
+                        class="btn btn-sm btn-primary chart-btn"
                         id="1d"
                         onclick="drawChartAgain('1d')"
                       >
@@ -115,7 +131,7 @@
                     </div>
                     <div class="col d-flex justify-content-center">
                       <button
-                        class="btn btn-sm btn-primary"
+                        class="btn btn-sm btn-primary chart-btn"
                         id="1w"
                         onclick="drawChartAgain('1w')"
                       >
@@ -124,7 +140,7 @@
                     </div>
                     <div class="col d-flex justify-content-center">
                       <button
-                        class="btn btn-sm btn-primary"
+                        class="btn btn-sm btn-primary chart-btn"
                         id="1m"
                         onclick="drawChartAgain('1m')"
                       >
@@ -133,7 +149,7 @@
                     </div>
                     <div class="col d-flex justify-content-center">
                       <button
-                        class="btn btn-sm btn-primary"
+                        class="btn btn-sm btn-primary chart-btn"
                         id="1y"
                         onclick="drawChartAgain('1y')"
                       >
@@ -159,11 +175,12 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
     <script src="./moment.js"></script>
     <script src="./script.js"></script>
     <script>
       Market24hrs();
-      drawChart("1h");
+      drawChart("live");
     </script>
   </body>
 </html>

@@ -52,3 +52,15 @@ body {
 .chart {
   user-select: none;
 }
+
+.chart-btn {
+  padding: 3px 5px;
+  font-size: 12px;
+  border: 1px solid #0d6efd;
+}
+
+@media only screen and (max-width: 600px) {
+  .xs-small{
+    font-size: 12px;
+  }
+}

@@ -2,6 +2,10 @@ const DOMAIN = "https://get-crypto-alert.herokuapp.com/api";
 
 function getDateTime(timestamp, chartType) {
   switch (chartType) {
+    case "live":
+      return moment(timestamp).format("mm:ss");
+    case "1h":
+      return moment(timestamp).format("H:mm");
     case "1d":
       return moment(timestamp).format("H:mm");
     case "1y":
@@ -16,16 +20,18 @@ let CURRENCY = "btc";
 let Currencies24Hrs = [];
 
 async function drawChartAgain(chartType, currency = CURRENCY) {
+  let btnlive = document.getElementById("live");
   let btn1h = document.getElementById("1h");
   let btn1d = document.getElementById("1d");
   let btn1w = document.getElementById("1w");
   let btn1m = document.getElementById("1m");
   let btn1y = document.getElementById("1y");
-  btn1h.classList = [`btn btn-sm btn-primary`];
-  btn1d.classList = [`btn btn-sm btn-primary`];
-  btn1w.classList = [`btn btn-sm btn-primary`];
-  btn1m.classList = [`btn btn-sm btn-primary`];
-  btn1y.classList = [`btn btn-sm btn-primary`];
+  btnlive.classList = [`btn btn-sm chart-btn btn-primary`];
+  btn1h.classList = [`btn btn-sm chart-btn btn-primary`];
+  btn1d.classList = [`btn btn-sm chart-btn btn-primary`];
+  btn1w.classList = [`btn btn-sm chart-btn btn-primary`];
+  btn1m.classList = [`btn btn-sm chart-btn btn-primary`];
+  btn1y.classList = [`btn btn-sm chart-btn btn-primary`];
 
   let btn = document.getElementById(chartType);
   btn.classList = [`${btn.className} prinary-btn-active`];
@@ -40,6 +46,9 @@ async function drawChartAgain(chartType, currency = CURRENCY) {
   let chartLoader = document.getElementById("chart-loader");
   chartLoader.style.display = "block";
 
+  let chartStats = document.getElementById("chart-stats");
+  chartStats.innerHTML = "";
+
   await drawChart(chartType, currency);
 }
 
@@ -47,8 +56,12 @@ async function drawChart(chartType, currency = CURRENCY) {
   CURRENCY = currency;
 
   var period = "1";
-  var delta = 3600000;
+  var delta = 900000;
   switch (chartType) {
+    case "1h":
+      delta = 3600000;
+      period = "1";
+      break;
     case "1d":
       delta = 86400000;
       period = "60";
@@ -85,9 +98,14 @@ async function drawChart(chartType, currency = CURRENCY) {
   });
   const data = await response.json();
 
+  let last = data[data.length - 1][0];
+  let secondLast = data[data.length - 2][0];
+
+  delta = last + (last - secondLast);
+
   let chartLabels = [
     ...data.map((i) => getDateTime(i[0] * 1000, chartType)),
-    getDateTime(date.getTime() + delta / 1000, chartType),
+    getDateTime(delta * 1000, chartType),
   ];
 
   let chartData = data.map((i) => i[1]);
@@ -152,6 +170,8 @@ async function drawChart(chartType, currency = CURRENCY) {
 
   let chartCard = document.getElementById("chart-card");
   chartCard.appendChild = ctx;
+
+  getChartStats(data);
 }
 
 async function fetch24hrMarket() {
@@ -186,7 +206,7 @@ async function Market24hrs(data = Currencies24Hrs, search = false) {
     let up = i.openPrice < i.lastPrice;
 
     html += `
-      <li class="list-group-item" onclick="drawChartAgain('1h', '${
+      <li class="list-group-item" onclick="drawChartAgain('live', '${
         i.baseAsset
       }'); window.location.replace('#c')">
         <div class="row">
@@ -203,7 +223,9 @@ async function Market24hrs(data = Currencies24Hrs, search = false) {
                 <p class="m-0 strong bold">${i.baseAsset.toUpperCase()}</p>
               </div>
               <div class="col">
-                <p class="m-0 text-end strong bold">₹ ${i.lastPrice} &nbsp;</p>
+                <p class="m-0 text-end strong bold">₹ ${numeral(
+                  i.lastPrice
+                ).format("0,0.[0000000]")} &nbsp;</p>
               </div>
             </div>
             <div class="row">
@@ -233,4 +255,47 @@ function searchCurrency() {
   data = Currencies24Hrs.filter((i) => i.baseAsset.match(searchInput.value));
 
   Market24hrs(data, true);
+}
+
+function getChartStats(data) {
+  var highest = data[0][1];
+  var lowest = data[0][1];
+
+  data.forEach((i) => {
+    if (i[1] > highest) {
+      highest = i[1];
+    }
+    if (i[1] < lowest) {
+      lowest = i[1];
+    }
+  });
+
+  var open = data[0][1];
+  var close = data[data.length - 1][1];
+
+  let percent = (((close - open) / open) * 100).toFixed(2);
+  let up = open < close;
+
+  let chartStats = document.getElementById("chart-stats");
+  chartStats.innerHTML = `
+    <div
+      class="row mb-3"
+      style="
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding-left: 7px;
+        padding-right: 7px;
+      "
+    >
+    <div class="col-4 col-md-4 d-flex justify-content-right xs-small">Highest &nbsp; <b>₹${numeral(
+      highest
+    ).format("0,0.[0000000]")}</b></div>
+    <div class="col-5 col-md-4 d-flex justify-content-center xs-small">Lowest &nbsp; <b>₹${numeral(
+      lowest
+    ).format("0,0.[0000000]")}</b></div>
+    <div class="col-3 col-md-4 d-flex justify-content-center xs-small bold ${
+      up ? "green" : "red"
+    }">${up ? "+" : ""}${percent}% &nbsp;</div>
+    </div>`;
 }

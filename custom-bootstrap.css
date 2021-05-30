@@ -6,7 +6,7 @@
 
 @media only screen and (max-width: 600px) {
   .chart-card {
-    padding: 20px 5px;
+    padding: 20px 0px;
   }
 }
 
@@ -14,5 +14,5 @@
   background-color: #fff;
   color: #0d6efd;
   font-weight: bold;
-  border: 2px solid #0d6efd;
+  border: 1px solid #0d6efd;
 }
