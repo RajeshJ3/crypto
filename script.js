@@ -250,13 +250,6 @@ async function Market24hrs(data = Currencies24Hrs, search = false) {
   currenciesHeading.innerHTML = `Currencies (${data.length})`;
 }
 
-function searchCurrency() {
-  var searchInput = document.getElementById("search-input");
-  data = Currencies24Hrs.filter((i) => i.baseAsset.match(searchInput.value));
-
-  Market24hrs(data, true);
-}
-
 function getChartStats(data) {
   var highest = data[0][1];
   var lowest = data[0][1];
@@ -299,3 +292,22 @@ function getChartStats(data) {
     }">${up ? "+" : ""}${percent}% &nbsp;</div>
     </div>`;
 }
+
+
+var searchInput = document.getElementById("search-input");
+searchInput.addEventListener("keypress", function (e) {
+  value = searchInput.value;
+  if (e.key !== "Enter") {
+    value += e.key;
+  }
+  data = Currencies24Hrs.filter((i) => i.baseAsset.match(value));
+  Market24hrs(data, true);
+});
+searchInput.addEventListener("keydown", function (e) {
+  if (e.key === "Backspace") {
+    value = searchInput.value;
+    value = value.slice(0, value.length - 1);
+    data = Currencies24Hrs.filter((i) => i.baseAsset.match(value));
+    Market24hrs(data, true);
+  }
+});
