@@ -52,6 +52,25 @@ async function drawChartAgain(chartType, currency = CURRENCY) {
   await drawChart(chartType, currency);
 }
 
+async function fetchChartData(currency, period, delta) {
+  let url = new URL(`${DOMAIN}/apicalls/`);
+
+  var date = new Date();
+  let timestamp = date.getTime() - delta;
+  timestamp = Math.floor(timestamp / 1000);
+
+  url.search = new URLSearchParams({
+    method: "GET",
+    url: `https://x.wazirx.com/api/v2/k?market=${currency}inr&period=${period}&limit=2000&timestamp=${timestamp}`,
+  }).toString();
+
+  let response = await fetch(url, {
+    method: "GET",
+  });
+
+  return await response.json();
+}
+
 async function drawChart(chartType, currency = CURRENCY) {
   CURRENCY = currency;
 
@@ -82,31 +101,9 @@ async function drawChart(chartType, currency = CURRENCY) {
       break;
   }
 
-  let url = new URL(`${DOMAIN}/apicalls/`);
+  var data = await fetchChartData(currency, period, delta);
 
-  var date = new Date();
-  let timestamp = date.getTime() - delta;
-  timestamp = Math.floor(timestamp / 1000);
-
-  url.search = new URLSearchParams({
-    method: "GET",
-    url: `https://x.wazirx.com/api/v2/k?market=${currency}inr&period=${period}&limit=2000&timestamp=${timestamp}`,
-  }).toString();
-
-  let response = await fetch(url, {
-    method: "GET",
-  });
-  const data = await response.json();
-
-  let last = data[data.length - 1][0];
-  let secondLast = data[data.length - 2][0];
-
-  delta = last + (last - secondLast);
-
-  let chartLabels = [
-    ...data.map((i) => getDateTime(i[0] * 1000, chartType)),
-    getDateTime(delta * 1000, chartType),
-  ];
+  let chartLabels = data.map((i) => getDateTime(i[0] * 1000, chartType));
 
   let chartData = data.map((i) => i[1]);
 
@@ -115,7 +112,7 @@ async function drawChart(chartType, currency = CURRENCY) {
   chart.style.display = "block";
   chart.style.maxHeight = "51vh";
 
-  new Chart(ctx, {
+  var chart = new Chart(ctx, {
     type: "line",
     data: {
       labels: chartLabels,
@@ -172,6 +169,50 @@ async function drawChart(chartType, currency = CURRENCY) {
   chartCard.appendChild = ctx;
 
   getChartStats(data);
+
+  if (chartType !== "live") {
+    return;
+  }
+
+  // Live
+  setInterval(async () => {
+    var updatedData = await fetchChartData(currency, period, delta);
+
+    var lastTS = data[data.length - 1][0];
+    var latestFetchedTS = updatedData[updatedData.length - 1][0];
+    var latestPrice = updatedData[updatedData.length - 1][1];
+
+    if (latestFetchedTS !== lastTS) {
+      data = updatedData;
+
+      // Adding latest timestamp to list
+      chart.data.labels.push(getDateTime(latestFetchedTS * 1000, chartType));
+      // removing first timestamp on list
+      chart.data.labels.shift();
+
+      chart.data.datasets.forEach((dataset) => {
+        // Adding latest price to list
+        dataset.data.push(latestPrice);
+        // removing first price on list
+        dataset.data.shift();
+      });
+
+      // Shifting point to latest price
+      chart.options.elements.point.radius = [
+        ...chartData.slice(0, chartData.length - 1).map((i) => i * 0),
+        4,
+      ];
+
+      // Removing animation
+      chart.options.animation.duration = 0;
+
+      // updating chart
+      chart.update();
+
+      // Checking for updates on chart
+      getChartStats(data);
+    }
+  }, 30000);
 }
 
 async function fetch24hrMarket() {
@@ -292,7 +333,6 @@ function getChartStats(data) {
     }">${up ? "+" : ""}${percent}% &nbsp;</div>
     </div>`;
 }
-
 
 var searchInput = document.getElementById("search-input");
 searchInput.addEventListener("keypress", function (e) {
