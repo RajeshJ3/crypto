@@ -26,6 +26,8 @@ let sortByOptions = [
 ];
 let sortBy = sortByOptions[0];
 
+let filterStarred = true;
+
 let interval;
 
 async function drawChartAgain(chartType, currency = CURRENCY) {
@@ -495,6 +497,27 @@ function dynamicSort(property) {
     var result = val_a < val_b ? -1 : val_a > val_b ? 1 : 0;
     return result * sortOrder;
   };
+}
+
+function toggleFilterStarred() {
+  var filterStarredElement = document.getElementById("filter-starred");
+  filterStarredElement.innerHTML = `
+    <img
+      class="small-star-icon"
+      src="./assets/img/${filterStarred ? "" : "not-"}star.png"
+      alt="star"
+    />
+      &nbsp;Starred
+    </span>
+  `;
+  var starredCurrencies = null;
+  if (filterStarred) {
+    var starredCurrencies = Currencies24Hrs.filter((i) =>
+      isStarred(i.baseAsset)
+    );
+  }
+  Market24hrs(starredCurrencies ? starredCurrencies : Currencies24Hrs, true);
+  filterStarred = !filterStarred;
 }
 
 var sortByElement = document.getElementById("sort-by");
