@@ -213,7 +213,7 @@ async function drawChart(chartType, currency = CURRENCY) {
 
     // Checking for updates on chart
     getChartStats(data);
-  }, 30000);
+  }, 15000);
 }
 
 async function fetch24hrMarket() {
