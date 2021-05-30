@@ -18,6 +18,7 @@ function getDateTime(timestamp, chartType) {
 
 let CURRENCY = "btc";
 let Currencies24Hrs = [];
+let interval;
 
 async function drawChartAgain(chartType, currency = CURRENCY) {
   let btnlive = document.getElementById("live");
@@ -175,7 +176,7 @@ async function drawChart(chartType, currency = CURRENCY) {
   }
 
   // Live
-  setInterval(async () => {
+  interval = setInterval(async () => {
     var updatedData = await fetchChartData(currency, period, delta);
 
     var lastTS = data[data.length - 1][0];
@@ -208,10 +209,10 @@ async function drawChart(chartType, currency = CURRENCY) {
 
       // updating chart
       chart.update();
-
-      // Checking for updates on chart
-      getChartStats(data);
     }
+
+    // Checking for updates on chart
+    getChartStats(data);
   }, 30000);
 }
 
@@ -249,7 +250,7 @@ async function Market24hrs(data = Currencies24Hrs, search = false) {
     html += `
       <li class="list-group-item" onclick="drawChartAgain('live', '${
         i.baseAsset
-      }'); window.location.replace('#c')">
+      }'); window.location.replace('#c'); clearInterval(interval);">
         <div class="row">
           <div class="col-2">
             <img
@@ -294,6 +295,7 @@ async function Market24hrs(data = Currencies24Hrs, search = false) {
 function getChartStats(data) {
   var highest = data[0][1];
   var lowest = data[0][1];
+  var current = data[data.length - 1][1];
 
   data.forEach((i) => {
     if (i[1] > highest) {
@@ -322,15 +324,30 @@ function getChartStats(data) {
         padding-right: 7px;
       "
     >
-    <div class="col-4 col-md-4 d-flex justify-content-right xs-small">Highest &nbsp; <b>₹${numeral(
-      highest
-    ).format("0,0.[0000000]")}</b></div>
-    <div class="col-5 col-md-4 d-flex justify-content-center xs-small">Lowest &nbsp; <b>₹${numeral(
-      lowest
-    ).format("0,0.[0000000]")}</b></div>
-    <div class="col-3 col-md-4 d-flex justify-content-center xs-small bold ${
+    <div class="col-6 d-flex justify-content-center bold">₹ ${numeral(
+      current
+    ).format("0,0.[0000000]")}</div>
+
+    <div class="col-6 d-flex justify-content-center bold ${
       up ? "green" : "red"
     }">${up ? "+" : ""}${percent}% &nbsp;</div>
+    </div>
+    <div
+      class="row mb-3"
+      style="
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding-left: 7px;
+        padding-right: 7px;
+      "
+    >
+    <div class="col-6 d-flex justify-content-center xs-small">Highest &nbsp; <b>₹${numeral(
+      highest
+    ).format("0,0.[0000000]")}</b></div>
+    <div class="col-6 d-flex justify-content-center xs-small">Lowest &nbsp; <b>₹${numeral(
+      lowest
+    ).format("0,0.[0000000]")}</b></div>
     </div>`;
 }
 
