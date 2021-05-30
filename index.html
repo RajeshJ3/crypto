@@ -58,6 +58,19 @@
                   />
                 </div>
 
+                <div class="row mb-1">
+                  <div class="col">
+                    <p class="m-0 text-end small bold">
+                      <span
+                        style="cursor: pointer; user-select: none"
+                        onclick="switchSort();"
+                        id="sort-by"
+                      >
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
                 <!-- START: Market Currencies List -->
                 <ul class="list-group currencies-list" id="market24hrs">
                   <!-- START: Currency -->
@@ -200,7 +213,7 @@
     <script src="./script.js"></script>
     <script>
       Market24hrs();
-      drawChart("live");
+      // drawChart("live");
     </script>
   </body>
 </html>

@@ -18,6 +18,14 @@ function getDateTime(timestamp, chartType) {
 
 let CURRENCY = "btc";
 let Currencies24Hrs = [];
+let sortByOptions = [
+  { by: "-lastPrice", value: "₹ Price", arrow: "&#8593;" },
+  { by: "lastPrice", value: "₹ Price", arrow: "&#8595;" },
+  { by: "-change", value: "% Change", arrow: "&#8593;" },
+  { by: "change", value: "% Change", arrow: "&#8595;" },
+];
+let sortBy = sortByOptions[0];
+
 let interval;
 
 async function drawChartAgain(chartType, currency = CURRENCY) {
@@ -239,7 +247,21 @@ async function fetch24hrMarket() {
     method: "GET",
   });
 
-  Currencies24Hrs = await response.json();
+  data = await response.json();
+
+  // prices only in "INR"
+  Currencies24Hrs = data.filter((i) => i.quoteAsset === "inr");
+
+  // append percent change to data array
+  Currencies24Hrs = Currencies24Hrs.map((i) => ({
+    ...i,
+    change: parseFloat(
+      (((i.lastPrice - i.openPrice) / i.openPrice) * 100).toFixed(2)
+    ),
+  }));
+
+  Currencies24Hrs.sort(dynamicSort("-lastPrice"));
+
   return Currencies24Hrs;
 }
 
@@ -250,13 +272,11 @@ async function Market24hrs(data = Currencies24Hrs, search = false) {
 
   let html = "";
 
-  // prices only in "INR"
-  data = data.filter((i) => i.quoteAsset === "inr");
   data.forEach((i) => {
-    let percent = (((i.lastPrice - i.openPrice) / i.openPrice) * 100).toFixed(
-      2
+    let percent = parseFloat(
+      (((i.lastPrice - i.openPrice) / i.openPrice) * 100).toFixed(2)
     );
-    let up = i.openPrice < i.lastPrice;
+    let up = percent >= 0;
 
     html += `
       <li class="list-group-item" onclick="drawChartAgain('live', '${
@@ -291,7 +311,7 @@ async function Market24hrs(data = Currencies24Hrs, search = false) {
               <div class="col">
                 <p class="m-0 text-end strong bold">₹ ${numeral(
                   i.lastPrice
-                ).format("0,0.[0000000]")} &nbsp;</p>
+                ).format("0,0.[0000000000]")} &nbsp;</p>
               </div>
             </div>
             <div class="row">
@@ -444,3 +464,37 @@ function isStarred(currency) {
   }
   return false;
 }
+
+async function switchSort() {
+  var currentIndex = sortByOptions.indexOf(sortBy);
+  if (currentIndex === sortByOptions.length - 1) {
+    sortBy = sortByOptions[0];
+  } else {
+    sortBy = sortByOptions[currentIndex + 1];
+  }
+
+  var sortByElement = document.getElementById("sort-by");
+  sortByElement.innerHTML = `${sortBy.value} ${sortBy.arrow}`;
+
+  Currencies24Hrs.sort(dynamicSort(`${sortBy.by}`));
+
+  await Market24hrs(Currencies24Hrs, true);
+}
+
+function dynamicSort(property) {
+  var sortOrder = 1;
+  if (property[0] === "-") {
+    sortOrder = -1;
+    property = property.substr(1);
+  }
+  return function (a, b) {
+    let val_a = parseFloat(a[property]);
+    let val_b = parseFloat(b[property]);
+
+    var result = val_a < val_b ? -1 : val_a > val_b ? 1 : 0;
+    return result * sortOrder;
+  };
+}
+
+var sortByElement = document.getElementById("sort-by");
+sortByElement.innerHTML = `₹ Price &#8595;`;
