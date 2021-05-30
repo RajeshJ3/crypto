@@ -65,7 +65,27 @@ body {
   border: 1px solid #0d6efd;
 }
 
+.star-wrapper {
+  margin: 15px;
+}
+
+.star-icon {
+  height: 25px;
+  cursor: pointer;
+}
+
+.small-star-icon {
+  margin: -4px 0px 0px 0px;
+  height: 13px;
+}
+
 @media only screen and (max-width: 600px) {
+  .star-wrapper {
+    margin: 10px 12px 0px 0px;
+  }
+  .star-icon {
+    height: 20px;
+  }
   .xs-small {
     font-size: 12px;
   }

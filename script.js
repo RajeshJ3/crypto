@@ -169,9 +169,20 @@ async function drawChart(chartType, currency = CURRENCY) {
   let chartCard = document.getElementById("chart-card");
   chartCard.appendChild = ctx;
 
+  let starWrapper = document.getElementById("star-wrapper");
+  starWrapper.innerHTML = `<img
+    class="star-icon"
+    onclick="${
+      isStarred(currency) ? "unstarCurrency" : "starCurrency"
+    }('${currency}')"
+    src="./assets/img/${isStarred(currency) ? "" : "not-"}star.png"
+    alt="star"
+  />`;
+
   getChartStats(data);
 
   if (chartType !== "live") {
+    clearInterval(interval);
     return;
   }
 
@@ -262,7 +273,20 @@ async function Market24hrs(data = Currencies24Hrs, search = false) {
           <div class="col-10">
             <div class="row">
               <div class="col">
-                <p class="m-0 strong bold">${i.baseAsset.toUpperCase()}</p>
+                <p class="m-0 strong bold">
+                ${i.baseAsset.toUpperCase()}
+                ${
+                  isStarred(`${i.baseAsset}`)
+                    ? `
+                    <img
+                      class="small-star-icon"
+                      src="./assets/img/star.png"
+                      alt="star"
+                    />
+                    `
+                    : ""
+                }
+                </p>
               </div>
               <div class="col">
                 <p class="m-0 text-end strong bold">₹ ${numeral(
@@ -368,3 +392,55 @@ searchInput.addEventListener("keydown", function (e) {
     Market24hrs(data, true);
   }
 });
+
+function starCurrency(currency) {
+  let store = window.localStorage.getItem("starred");
+  if (store) {
+    store = JSON.parse(store);
+  } else {
+    store = [];
+  }
+  store = [...store, currency];
+
+  localStorage.setItem("starred", JSON.stringify(store));
+
+  let starWrapper = document.getElementById("star-wrapper");
+  starWrapper.innerHTML = `<img
+    class="star-icon"
+    onclick="unstarCurrency('${currency}')"
+    src="./assets/img/star.png"
+    alt="star"
+  />`;
+}
+
+function unstarCurrency(currency) {
+  let store = window.localStorage.getItem("starred");
+  if (store) {
+    store = JSON.parse(store);
+  } else {
+    store = [];
+  }
+  store = store.filter((i) => i !== currency);
+
+  localStorage.setItem("starred", JSON.stringify(store));
+
+  let starWrapper = document.getElementById("star-wrapper");
+  starWrapper.innerHTML = `<img
+    class="star-icon"
+    onclick="starCurrency('${currency}')"
+    src="./assets/img/not-star.png"
+    alt="star"
+  />`;
+}
+
+function isStarred(currency) {
+  let store = window.localStorage.getItem("starred");
+  if (store) {
+    store = JSON.parse(store);
+    if (store.indexOf(currency) === -1) {
+      return false;
+    }
+    return true;
+  }
+  return false;
+}
