@@ -1,8 +1,10 @@
+@import url(./theme.css);
+
 * {
   margin: 0px;
   padding: 0px;
   background-color: transparent;
-  color: #3c4a5b;
+  color: var(--color);
 }
 
 ::-webkit-scrollbar {
@@ -14,7 +16,7 @@
 }
 
 body {
-  background-color: #f0f3f8;
+  background-color: var(--light-background-color);
 }
 
 .heading {

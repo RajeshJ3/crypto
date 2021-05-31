@@ -1,7 +1,9 @@
+@import url(./theme.css);
+
 .custom-card {
   padding: 20px;
   border-radius: 10px;
-  background-color: #fff;
+  background-color: var(--background-color);
 }
 
 @media only screen and (max-width: 600px) {
