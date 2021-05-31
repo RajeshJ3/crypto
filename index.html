@@ -241,16 +241,19 @@
     <script src="./moment.js"></script>
     <script src="./script.js"></script>
     <script>
-      Market24hrs();
-      drawChart("live");
+      // Market24hrs();
+      // drawChart("live");
 
       var localMode = localStorage.getItem("dark");
-      if (!localMode) {
-        localMode = false;
+
+      if (localMode === null) {
+        localMode = 0;
+        localStorage.setItem("dark", 0);
       }
 
       document.addEventListener("DOMContentLoaded", function (event) {
-        if (localMode) {
+        if (parseInt(localMode)) {
+          console.log("ACCESSED!");
           var checkBox = document.getElementById("theme-switcher");
           checkBox.checked = true;
 
@@ -270,7 +273,7 @@
         var label = document.getElementById("theme-switcher-label");
         label.innerHTML = switchToTheme === "dark" ? "Dark Mode" : "Light Mode";
 
-        localStorage.setItem("dark", switchToTheme === "dark" ? true : false);
+        localStorage.setItem("dark", switchToTheme === "dark" ? 1 : 0);
       };
     </script>
   </body>
