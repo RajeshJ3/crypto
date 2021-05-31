@@ -251,6 +251,10 @@
         localStorage.setItem("dark", 0);
       }
 
+      if (localMode !== "0" || localMode !== "1") {
+        localStorage.removeItem("dark");
+      }
+
       document.addEventListener("DOMContentLoaded", function (event) {
         if (parseInt(localMode)) {
           console.log("ACCESSED!");
