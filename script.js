@@ -1,5 +1,7 @@
+// Live Prices API-end point
 const DOMAIN = "https://get-crypto-alert.herokuapp.com/api";
 
+// timestamp to date time format
 function getDateTime(timestamp, chartType) {
   switch (chartType) {
     case "live":
@@ -16,14 +18,19 @@ function getDateTime(timestamp, chartType) {
   }
 }
 
+// Default values
 let CURRENCY = "btc";
 let Currencies24Hrs = [];
+
+// Sorting Options
 let sortByOptions = [
   { by: "-lastPrice", value: "₹ Price", arrow: "&#8593;" },
   { by: "lastPrice", value: "₹ Price", arrow: "&#8595;" },
   { by: "-change", value: "% Change", arrow: "&#8593;" },
   { by: "change", value: "% Change", arrow: "&#8595;" },
 ];
+
+// Default sorting
 let sortBy = sortByOptions[0];
 
 let filterStarred = true;
@@ -63,6 +70,7 @@ async function drawChartAgain(chartType, currency = CURRENCY) {
   await drawChart(chartType, currency);
 }
 
+// Fetch data for chart from API
 async function fetchChartData(currency, period, delta) {
   let url = new URL(`${DOMAIN}/apicalls/`);
 
@@ -75,18 +83,23 @@ async function fetchChartData(currency, period, delta) {
     url: `https://x.wazirx.com/api/v2/k?market=${currency}inr&period=${period}&limit=2000&timestamp=${timestamp}`,
   }).toString();
 
+  // making request
   let response = await fetch(url, {
     method: "GET",
   });
 
+  // returning response
   return await response.json();
 }
 
+// Draw Chart
 async function drawChart(chartType, currency = CURRENCY) {
   CURRENCY = currency;
 
   var period = "1";
   var delta = 900000;
+
+  // Setting time delta(delta) and data gap(perior)
   switch (chartType) {
     case "1h":
       delta = 3600000;
@@ -112,21 +125,28 @@ async function drawChart(chartType, currency = CURRENCY) {
       break;
   }
 
+  // Prepare data for chart
   var data = await fetchChartData(currency, period, delta);
 
+  // Prepare Labels for chart (date and time)
   let chartLabels = data.map((i) => getDateTime(i[0] * 1000, chartType));
 
   let chartData = data.map((i) => i[1]);
 
+  // Chart from DOM
   var chart = document.getElementById("chart");
   var ctx = chart.getContext("2d");
   chart.style.display = "block";
   chart.style.maxHeight = "51vh";
 
+  // Drawing Line Chart
   var chart = new Chart(ctx, {
     type: "line",
     data: {
+      // Providing labels to chart
       labels: chartLabels,
+
+      // Providing data and style to chart
       datasets: [
         {
           label: `${currency.toUpperCase()}/INR`,
@@ -137,6 +157,8 @@ async function drawChart(chartType, currency = CURRENCY) {
         },
       ],
     },
+
+    // Chart configurations
     options: {
       scales: {
         x: {
@@ -173,12 +195,14 @@ async function drawChart(chartType, currency = CURRENCY) {
     },
   });
 
+  // Removing loader from DOM
   let chartLoader = document.getElementById("chart-loader");
   chartLoader.style.display = "none";
 
   let chartCard = document.getElementById("chart-card");
   chartCard.appendChild = ctx;
 
+  // Checking for Star/Unstar
   let starWrapper = document.getElementById("star-wrapper");
   starWrapper.innerHTML = `<img
     class="star-icon"
@@ -189,6 +213,7 @@ async function drawChart(chartType, currency = CURRENCY) {
     alt="star"
   />`;
 
+  // Drawing Header
   getChartStats(data);
 
   if (chartType !== "live") {
@@ -196,7 +221,7 @@ async function drawChart(chartType, currency = CURRENCY) {
     return;
   }
 
-  // Live
+  // If Live, make continuous requests in every 30s
   interval = setInterval(async () => {
     var updatedData = await fetchChartData(currency, period, delta);
 
@@ -237,6 +262,7 @@ async function drawChart(chartType, currency = CURRENCY) {
   }, 15000);
 }
 
+// Last 24hrs market API request
 async function fetch24hrMarket() {
   let url = new URL(`${DOMAIN}/apicalls/`);
 
@@ -267,13 +293,16 @@ async function fetch24hrMarket() {
   return Currencies24Hrs;
 }
 
+// DOM manipulation
 async function Market24hrs(data = Currencies24Hrs, search = false) {
   if (!search) {
+    // fetching data
     data = await fetch24hrMarket();
   }
 
   let html = "";
 
+  // Preparing DOM Element(List of currencies)
   data.forEach((i) => {
     let percent = parseFloat(
       (((i.lastPrice - i.openPrice) / i.openPrice) * 100).toFixed(2)
@@ -338,9 +367,15 @@ async function Market24hrs(data = Currencies24Hrs, search = false) {
   currenciesHeading.innerHTML = `Currencies (${data.length})`;
 }
 
+// Chart Header Data
 function getChartStats(data) {
+  // highest in given time
   var highest = data[0][1];
+
+  // lowest in given time
   var lowest = data[0][1];
+
+  // Current price
   var current = data[data.length - 1][1];
 
   data.forEach((i) => {
@@ -353,12 +388,19 @@ function getChartStats(data) {
     }
   });
 
+  // Starting price
   var open = data[0][1];
+
+  // Latest price
   var close = data[data.length - 1][1];
 
+  // Calculating change percentage
   let percent = parseFloat((((close - open) / open) * 100).toFixed(2));
+
+  // Checking if value increased or decreased
   let up = percent >= 0;
 
+  // Peparing DOM element
   let chartStats = document.getElementById("chart-stats");
   chartStats.innerHTML = `
     <div
@@ -398,6 +440,7 @@ function getChartStats(data) {
     </div>`;
 }
 
+// Searching
 var searchInput = document.getElementById("search-input");
 searchInput.addEventListener("keypress", function (e) {
   value = searchInput.value;
@@ -416,6 +459,7 @@ searchInput.addEventListener("keydown", function (e) {
   }
 });
 
+// Starring a currency
 function starCurrency(currency) {
   let store = window.localStorage.getItem("starred");
   if (store) {
@@ -436,6 +480,7 @@ function starCurrency(currency) {
   />`;
 }
 
+// Unstarring a currency
 function unstarCurrency(currency) {
   let store = window.localStorage.getItem("starred");
   if (store) {
@@ -456,6 +501,7 @@ function unstarCurrency(currency) {
   />`;
 }
 
+// Checking if currency is starred or not
 function isStarred(currency) {
   let store = window.localStorage.getItem("starred");
   if (store) {
@@ -468,6 +514,7 @@ function isStarred(currency) {
   return false;
 }
 
+// Sorting
 async function switchSort() {
   var currentIndex = sortByOptions.indexOf(sortBy);
   if (currentIndex === sortByOptions.length - 1) {
@@ -484,6 +531,7 @@ async function switchSort() {
   await Market24hrs(Currencies24Hrs, true);
 }
 
+// Sort by property
 function dynamicSort(property) {
   var sortOrder = 1;
   if (property[0] === "-") {
@@ -499,6 +547,7 @@ function dynamicSort(property) {
   };
 }
 
+// Filter by star
 function toggleFilterStarred() {
   var filterStarredElement = document.getElementById("filter-starred");
   filterStarredElement.innerHTML = `

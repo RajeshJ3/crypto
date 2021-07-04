@@ -4,20 +4,30 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Site Icon -->
     <link rel="shortcut icon" type="image/jpg" href="./assets/img/btc.png" />
+
+    <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
       crossorigin="anonymous"
     />
+
+    <!-- Theme Color -->
     <meta name="theme-color" content="#ffffff" />
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="./styles/override-bootstrap.css" />
     <link rel="stylesheet" href="./styles/custom-bootstrap.css" />
     <link rel="stylesheet" href="./styles/style.css" />
+
+    <!-- Site Title -->
     <title>Crypto Currency Alerts | stackless.tech</title>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- Global tag for Google Analytics -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-TYT0KMC5E9"
@@ -226,24 +236,40 @@
         </div>
       </div>
     </div>
+
+    <!-- Bootstrap JS -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
       crossorigin="anonymous"
     ></script>
+
+    <!-- ChartJS -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.0/chart.min.js"
       integrity="sha512-yadYcDSJyQExcKhjKSQOkBKy2BLDoW6WnnGXCAkCoRlpHGpYuVuBqGObf3g/TdB86sSbss1AOP4YlGSb6EKQPg=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
+
+    <!-- Numeral JS for humanize numbers -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+
+    <!-- Moment js for date and time -->
     <script src="./moment.js"></script>
+
+    <!-- Custom Script -->
     <script src="./script.js"></script>
+
+    <!-- Auto Trigger the following Script -->
     <script>
+      // Get last 24hrs crypto market
       Market24hrs();
+
+      // Draw chart
       drawChart("live");
 
+      // Default Theme
       var localMode = localStorage.getItem("dark");
 
       if (!(localMode === "0" || localMode === "1")) {
@@ -251,13 +277,16 @@
         localMode === null;
       }
 
+      // Default Dark theme
       if (localMode === null) {
         localMode = 0;
         localStorage.setItem("dark", 0);
       }
 
+      // When DOM Loads
       document.addEventListener("DOMContentLoaded", function (event) {
         if (parseInt(localMode)) {
+          // Enabled dark mode
           var checkBox = document.getElementById("theme-switcher");
           checkBox.checked = true;
 
@@ -268,6 +297,7 @@
         }
       });
 
+      // Switch Theme
       var themeSwitcher = document.getElementById("theme-switcher");
       themeSwitcher.onclick = function () {
         var currentTheme = document.documentElement.getAttribute("data-theme");
