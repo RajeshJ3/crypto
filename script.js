@@ -1,5 +1,5 @@
 // Live Prices API-end point
-const DOMAIN = "https://get-crypto-alert.herokuapp.com/api";
+const DOMAIN = "https://cors-proxy1.p.rapidapi.com/v1";
 
 // timestamp to date time format
 function getDateTime(timestamp, chartType) {
@@ -72,24 +72,40 @@ async function drawChartAgain(chartType, currency = CURRENCY) {
 
 // Fetch data for chart from API
 async function fetchChartData(currency, period, delta) {
-  let url = new URL(`${DOMAIN}/apicalls/`);
+  let url = new URL(DOMAIN);
 
   var date = new Date();
   let timestamp = date.getTime() - delta;
   timestamp = Math.floor(timestamp / 1000);
 
-  url.search = new URLSearchParams({
-    method: "GET",
-    url: `https://x.wazirx.com/api/v2/k?market=${currency}inr&period=${period}&limit=2000&timestamp=${timestamp}`,
-  }).toString();
+  const options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "X-RapidAPI-Key": "c67ea98b23mshd08bec277f45914p119f6ejsn12305da0a0f2",
+      "X-RapidAPI-Host": "cors-proxy1.p.rapidapi.com",
+    },
+    body: JSON.stringify({
+      url: "https://x.wazirx.com/api/v2/k",
+      method: "GET",
+      params: {
+        market: `${currency}inr`,
+        period: period,
+        limit: "2000",
+        timestamp: timestamp,
+      },
+      data: {},
+      headers: {},
+      cookies: {},
+    }),
+  };
 
   // making request
-  let response = await fetch(url, {
-    method: "GET",
-  });
+  let response = await fetch(url, options);
 
   // returning response
-  return await response.json();
+  let tempData = await response.json();
+  return tempData.payload
 }
 
 // Draw Chart
@@ -264,18 +280,29 @@ async function drawChart(chartType, currency = CURRENCY) {
 
 // Last 24hrs market API request
 async function fetch24hrMarket() {
-  let url = new URL(`${DOMAIN}/apicalls/`);
+  let url = new URL(DOMAIN);
 
-  url.search = new URLSearchParams({
-    method: "GET",
-    url: "https://api.wazirx.com/uapi/v1/tickers/24hr",
-  }).toString();
+  const options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "X-RapidAPI-Key": "c67ea98b23mshd08bec277f45914p119f6ejsn12305da0a0f2",
+      "X-RapidAPI-Host": "cors-proxy1.p.rapidapi.com",
+    },
+    body: JSON.stringify({
+      url: "https://api.wazirx.com/sapi/v1/tickers/24hr",
+      method: "GET",
+      params: {},
+      data: {},
+      headers: {},
+      cookies: {},
+    }),
+  };
 
-  let response = await fetch(url, {
-    method: "GET",
-  });
+  let response = await fetch(url, options);
 
   data = await response.json();
+  data = data.payload
 
   // prices only in "INR"
   Currencies24Hrs = data.filter((i) => i.quoteAsset === "inr");
